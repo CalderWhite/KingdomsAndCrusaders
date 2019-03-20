@@ -4,7 +4,7 @@ Person p;
 Person p2;
 
 void setup() {
-  size(500, 500);
+  size(1000, 1000);
   fill(0);
   noStroke();
   
@@ -16,7 +16,7 @@ void setup() {
     grid.addPerson(p);
   }
   
-  grid.flushGridBuffer();
+  grid.flushBuffers();
 }
 
 void draw() {

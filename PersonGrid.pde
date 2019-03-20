@@ -1,4 +1,4 @@
-static int MAX_COLONIES = 20;
+static int MAX_COLONY_COUNT = 20;
 
 class PersonGrid {
   int gridLength;
@@ -8,7 +8,8 @@ class PersonGrid {
   Person[][] grid;
   Person[][] gridNext;
   
-  int[] colonyCount = new int[MAX_COLONIES];
+  int[] colonyCount = new int[MAX_COLONY_COUNT];
+  int[] colonyCountNext = new int[MAX_COLONY_COUNT];
   
   PersonGrid(int lengthIn) {
     grid = new Person[lengthIn][lengthIn];
@@ -29,22 +30,24 @@ class PersonGrid {
   void addPerson(Person p) {
     gridNext[p.row][p.col] = p;
     
-    ++colonyCount[p.colony];
+    ++colonyCountNext[p.colony];
   }
   
   void removePerson(Person p) {
     gridNext[p.row][p.col] = null;
     
-    --colonyCount[p.colony];
+    --colonyCountNext[p.colony];
   }
   
-  void asd() {
+  void flushBuffers() {
     // deep copy just in case the pointers don't change in processing
     for (int i=0; i<gridLength; i++) {
       for (int j=0; j<gridLength; j++) {
         grid[i][j] = gridNext[i][j];
       }
     }
+    
+    colonyCount = colonyCountNext;
   }
   
   void refreshGridBuffer() {
@@ -176,6 +179,15 @@ class PersonGrid {
     }
     
     // flush the grid buffer
-    flushGridBuffer();
+    flushBuffers();
+    
+    
+    for (int i=0; i<MAX_COLONY_COUNT; i++) {
+      float colonyPower = colonyCount[i];
+      float birthProbability = 0.1 + 0.1*(colonyPower/(gridLength*gridLength));
+      print(birthProbability);
+      print(" ");
+    }
+    println();
   }
 }

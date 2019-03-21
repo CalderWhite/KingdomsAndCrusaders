@@ -1,6 +1,6 @@
 static int MAX_COLONY_COUNT = 20;
 
-class PersonGrid {
+class Grid {
   int gridLength;
   int blockLength;
   color[] colonyColorList = {color(255, 0, 0), color(238, 0, 255), color(255, 250, 0), color(0, 255, 0), color(255, 255, 255)};
@@ -8,35 +8,34 @@ class PersonGrid {
   Person[][] grid;
   Person[][] gridNext;
   
-  int[] colonyCount = new int[MAX_COLONY_COUNT];
-  int[] colonyCountNext = new int[MAX_COLONY_COUNT];
+  boolean[][] terrainGrid;
   
-  PersonGrid(int lengthIn) {
+  int[] colonyCount = new int[MAX_COLONY_COUNT];
+
+  Grid(int lengthIn, boolean[][] terrain) {
     grid = new Person[lengthIn][lengthIn];
     gridNext = new Person[lengthIn][lengthIn];
+    
+    terrainGrid = terrain;
 
     gridLength = lengthIn;
     blockLength = width/lengthIn;
   }
   
-  void movePerson(Person p, int row, int col) {
-    gridNext[row][col] = null;
+  void updatePersonPosition(Person p) {
+    if (p.lastRow >= 0) {
+      gridNext[p.lastRow][p.lastCol] = null;
+    }
     
-    p.setCoords(row, col);
-    
-    gridNext[row][col] = p;
+    gridNext[p.row][p.col] = p;
   }
   
   void addPerson(Person p) {
     gridNext[p.row][p.col] = p;
-    
-    ++colonyCountNext[p.colony];
   }
   
   void removePerson(Person p) {
     gridNext[p.row][p.col] = null;
-    
-    --colonyCountNext[p.colony];
   }
   
   void flushBuffers() {
@@ -46,11 +45,9 @@ class PersonGrid {
         grid[i][j] = gridNext[i][j];
       }
     }
-    
-    colonyCount = colonyCountNext;
   }
   
-  void refreshGridBuffer() {
+  void refreshBuffers() {
     // deep copy just in case the pointers don't change in processing
     for (int i=0; i<gridLength; i++) {
       for (int j=0; j<gridLength; j++) {
@@ -68,6 +65,29 @@ class PersonGrid {
     };
     
     return p;
+  }
+  
+  boolean positionOnLand(int row, int col) {
+    boolean onLand = false;
+    try {
+      onLand = terrainGrid[row][col];
+    } catch (ArrayIndexOutOfBoundsException e) {}; 
+    
+    return onLand;
+  }
+  
+  void updateColonyCount() {
+    colonyCount = new int[MAX_COLONY_COUNT];
+    
+    for (int i=0; i<gridLength; i++) {
+      for (int j=0; j<gridLength; j++) {
+        Person p = safeGetPerson(i, j);
+        
+        if (p != null) {
+          colonyCount[p.colony]++;
+        }
+      }
+    }
   }
   
   void attemptReproduction(Person p) {
@@ -102,7 +122,7 @@ class PersonGrid {
               inBounds = false;
             }
             
-            if (other == null && inBounds) {
+            if (other == null && inBounds && positionOnLand(p.row + i, p.col + j)) {
               int[] freePos = {p.row + i, p.col + j};
               freeSquares.add(freePos);
             }
@@ -151,7 +171,15 @@ class PersonGrid {
         
         if (p != null) {
           fill(colonyColorList[p.colony]);
-          rect(p.row * blockLength, p.col * blockLength, blockLength, blockLength);
+          rect(p.col * blockLength, p.row * blockLength, blockLength, blockLength);
+        } else {
+          if (terrainGrid[i][j]) {
+            fill(237, 232, 175);
+            rect(j * blockLength, i * blockLength, blockLength, blockLength);
+          } else {
+            fill(0, 0, 255);
+            rect(j * blockLength, i * blockLength, blockLength, blockLength);
+          }
         }
       }
     }
@@ -160,8 +188,8 @@ class PersonGrid {
   }
   
   void updatePeople() {
-    // copy 
-    refreshGridBuffer();
+    // copy the buffers
+    refreshBuffers();
     
     // maybe make this faster by keeping a list of people later on
     for (int i=0; i<gridLength; i++) {
@@ -172,22 +200,22 @@ class PersonGrid {
           boolean isDead = killOneEnemyNeighbor(p);
           
           if (!isDead) {
-            attemptReproduction(p);
+            if (p.type == PersonType.Breeder) {
+              attemptReproduction(p);
+            } else {
+              p.updatePos();
+              
+              updatePersonPosition(p);
+            }
           }
         }
       }
     }
     
+    // update the colony populations
+    updateColonyCount();
+    
     // flush the grid buffer
     flushBuffers();
-    
-    
-    for (int i=0; i<MAX_COLONY_COUNT; i++) {
-      float colonyPower = colonyCount[i];
-      float birthProbability = 0.1 + 0.1*(colonyPower/(gridLength*gridLength));
-      print(birthProbability);
-      print(" ");
-    }
-    println();
   }
 }

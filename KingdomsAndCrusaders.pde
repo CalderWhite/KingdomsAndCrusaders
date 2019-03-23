@@ -3,8 +3,11 @@ Grid grid;
 // GAME CONSTANTS
 int n = 100;
 int SPAWNS_PER_COLONY = 2;
-int NUM_COLONIES = 5; // do note, sometimes spawns sail off the map and die. So, you will not always see this many colonies
+int NUM_COLONIES = 5; // max of 5
 int FRAME_RATE = 60; // decreasing this can be quite fascinating!
+
+// if you are interest in solely the colony vs colony behaviour, turn this off
+boolean ISLANDS = false;
 
 // PROCEDURAL ISLAND GENERATION CONSTANTS
 float NOISE_INCREMENT = 0.05;
@@ -42,9 +45,6 @@ boolean[][] generateTerrain(int terrainSize) {
 }
 
 void setup() {
-  // CONSTANTS
-  int n = 100;
-  
   // WINDOW/GRAPHICS SETUP
   size(750, 750);
   fill(0);
@@ -52,7 +52,18 @@ void setup() {
   frameRate(FRAME_RATE);
   
   // GAME OBJECTS
-  grid = new Grid(n, generateTerrain(n));
+  boolean[][] terrain;
+  if (ISLANDS) {
+    terrain = generateTerrain(n);
+  } else {
+    terrain = new boolean[n][n];
+    for (int i=0; i<n; i++) {
+      for (int j=0; j<n; j++) {
+        terrain[i][j] = true;
+      }
+    }
+  }
+  grid = new Grid(n, terrain);
 
   // random person generation
   for (int i=0; i<NUM_COLONIES; i++) {

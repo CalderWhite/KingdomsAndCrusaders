@@ -1,4 +1,4 @@
-static int MAX_COLONY_COUNT = 20;
+static int MAX_COLONY_COUNT = 5;
 
 class Grid {
   int gridLength;
@@ -99,8 +99,6 @@ class Grid {
   }
   
   void attemptReproduction(Person p) {
-    // 30% chance that the person breeds to a random square that is free
-    // doesn't breed if none are free
     // this probability will increase with a colony's population, as they acquire more resources
     // the more people there are, the more land they own.
     // the correlation between population count and birth rate directly affects 

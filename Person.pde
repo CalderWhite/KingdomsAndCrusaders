@@ -18,6 +18,9 @@ class Person {
     
     lastCol = -1;
     lastRow = -1;
+    
+    rowOffset = -1;
+    colOffset = 0;
   }
   
   void setCoords(int rowIn, int colIn) {
@@ -27,7 +30,18 @@ class Person {
     col = colIn;
   }
   
-  void updatePerson() {
+  void updatePos() {
     setCoords(row + rowOffset, col + colOffset);
+  }
+  
+  void setSails(int rowDirection, int colDirection) {
+    rowOffset = rowDirection;
+    colOffset = colDirection;
+    
+    type = PersonType.Sailor;
+  }
+  
+  void settle() {
+    type = PersonType.Settler;
   }
 }

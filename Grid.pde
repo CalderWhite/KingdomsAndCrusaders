@@ -9,6 +9,7 @@ class Grid {
   Person[][] gridNext;
   
   boolean[][] terrainGrid;
+  int landSize;
   
   int[] colonyCount = new int[MAX_COLONY_COUNT];
 
@@ -17,6 +18,13 @@ class Grid {
     gridNext = new Person[lengthIn][lengthIn];
     
     terrainGrid = terrain;
+    for (int i=0; i<lengthIn; i++) {
+      for (int j=0; j<lengthIn; j++) {
+        if (terrain[i][j]) {
+          ++landSize;
+        }
+      }
+    }
 
     gridLength = lengthIn;
     blockLength = width/lengthIn;
@@ -103,7 +111,7 @@ class Grid {
     
     // by using the total grid size as the denominator, this simulates the finite resources, and that once
     // a colony has all the squares covered, they will complete power
-    float birthProbability = 0.1 + 0.1*(colonyPower/(gridLength*gridLength));
+    float birthProbability = 0.1 + 0.1*(colonyPower/(landSize));
     
     
     if (random(0,1) <= birthProbability) {
@@ -121,7 +129,7 @@ class Grid {
             } catch (ArrayIndexOutOfBoundsException e) {
               inBounds = false;
             }
-            
+
             if (other == null && inBounds && positionOnLand(p.row + i, p.col + j)) {
               int[] freePos = {p.row + i, p.col + j};
               freeSquares.add(freePos);
@@ -163,6 +171,43 @@ class Grid {
     return false;
   }
   
+  void updatePersonState(Person p) {
+    ArrayList<int[]> directions = new ArrayList<int[]>();
+    switch(p.type) {
+      case Breeder:
+        for (int i=-1; i<=1; i++) {
+          for (int j=-1; j<=1; j++) {
+            if (i != 0 || j != 0) {
+              try {
+                if (!terrainGrid[p.row + i][p.col + j]) {
+                  int[] pos = {i, j};
+                  directions.add(pos);
+                }
+              } catch (ArrayIndexOutOfBoundsException e) {
+              }
+            }
+          }
+        }
+        
+        if (directions.size() >= 1) {
+          int randomIndex = int(random(0,directions.size()));
+          
+          // update the person's properties
+          int row = directions.get(randomIndex)[0];
+          int col = directions.get(randomIndex)[1];
+          p.setSails(row, col);
+        }
+        break;
+      case Sailor:
+        if (positionOnLand(p.row, p.col)) {
+          p.settle();
+        }
+        break;
+      case Settler:
+        break;
+    }
+  }
+  
   void render() {
     // maybe make this faster by keeping a list of people later on
     for (int i=0; i<gridLength; i++) {
@@ -200,12 +245,24 @@ class Grid {
           boolean isDead = killOneEnemyNeighbor(p);
           
           if (!isDead) {
-            if (p.type == PersonType.Breeder) {
-              attemptReproduction(p);
-            } else {
-              p.updatePos();
-              
-              updatePersonPosition(p);
+            updatePersonState(p);
+
+            switch (p.type) {
+              case Breeder:
+                attemptReproduction(p);
+                break;
+              case Sailor:
+                p.updatePos();
+                
+                // if they fall off the map, may they rest in peace.
+                try {
+                  updatePersonPosition(p);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                }
+                break;
+              case Settler:
+                attemptReproduction(p);
+                break;
             }
           }
         }

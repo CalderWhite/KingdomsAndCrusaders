@@ -1,4 +1,5 @@
 enum PersonType {
   Breeder,
-  Sailor
+  Sailor,
+  Settler
 };

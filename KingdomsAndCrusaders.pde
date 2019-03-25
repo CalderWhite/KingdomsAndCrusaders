@@ -4,7 +4,7 @@ Grid grid;
 int n = 200;
 int SPAWNS_PER_COLONY = 2;
 int NUM_COLONIES = 5; // max of 5
-int FRAME_RATE = 120; // decreasing this can be quite fascinating!
+int FRAME_RATE = 10; // decreasing this can be quite fascinating!
 
 // if you are interest in solely the colony vs colony behaviour, turn this off
 boolean ISLANDS = true;

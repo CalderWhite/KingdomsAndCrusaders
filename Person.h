@@ -20,6 +20,10 @@ public:
         return m_colony;
     }
 
+    inline void setColony(int c) {
+        m_colony = c;
+    }
+
     inline bool getActive() const {
         return m_active;
     }

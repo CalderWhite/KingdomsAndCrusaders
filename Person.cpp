@@ -17,4 +17,10 @@ void Person::settle() {
 
 void Person::setActive(bool s) {
     m_active = s;
+
+    if (m_active == false) {
+        m_row_dir = 0;
+        m_col_dir = 0;
+        m_type = PersonType::Breeder;
+    }
 }

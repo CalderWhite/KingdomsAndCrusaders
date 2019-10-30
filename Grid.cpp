@@ -28,13 +28,15 @@ Grid::Grid(int gs, int sw, int sh)
     for (int r=0; r<m_grid_size; r++) {
         for (int c=0; c<m_grid_size; c++) {
             if (m_terrain_grid[r][c]) {
-                ++total_land;
+                ++m_total_land;
             }
         }
     }
 
     // init all the rects
     rescaleGrid();
+
+    m_colony_count.resize(m_max_colony_count, 0);
 }
 
 void Grid::resizeScreen(int s) {
@@ -51,21 +53,25 @@ void Grid::updatePeople() {
         }
     }
 
+    updateColonyCount();
+
     for (int r=0; r<m_grid_size; r++) {
         for (int c=0; c<m_grid_size; c++) {
             Person& p = m_person_grid[r][c];
 
             if (p.getActive()) {
-                bool murderer = killOneEnemyNeighbor(r, c, p);
+                bool murderer = killOneEnemyNeighbor(p, r, c);
 
                 if (!murderer) {
-                    // TODO
+                    updatePersonState(p, r, c);
                     switch(p.getType()) {
                         case PersonType::Breeder:
+                            attemptReproduction(p, r, c);
                             break;
                         case PersonType::Sailor:
                             break;
                         case PersonType::Settler:
+                            attemptReproduction(p, r, c);
                             break;
                     }
                 }
@@ -93,17 +99,26 @@ void Grid::draw(SDL_Renderer* renderer) {
 }
 
 void Grid::test() {
-    Person p = Person(0);
-    Person p2 = Person(1);
-    Person p3 = Person(1);
+    // vertically aligned standoff
+    m_person_grid_next[1][m_grid_size/2].setActive(true);
+    m_person_grid_next[1][m_grid_size/2].setColony(6);
+    m_person_grid_next[m_grid_size-2][m_grid_size/2].setActive(true);
+    m_person_grid_next[m_grid_size-2][m_grid_size/2].setColony(7);
+}
 
-    m_person_grid[3][3] = p;
-    m_person_grid_next[3][3] = p;
+void Grid::updateColonyCount() {
+    for (int i=0; i<static_cast<int>(m_colony_count.size()); i++) {
+        m_colony_count[i] = 0;
+    }
 
-    m_person_grid[3][4] = p2;
-    m_person_grid_next[3][4] = p2;
-    m_person_grid[2][2] = p3;
-    m_person_grid_next[2][2] = p3;
+    for (int r=0; r<m_grid_size; r++) {
+        for (int c=0; c<m_grid_size; c++) {
+            Person& p = m_person_grid[r][c];
+            if (p.getActive()) {
+                ++m_colony_count[p.getColony()];
+            }
+        }
+    }
 }
 
 void Grid::rescaleGrid() {
@@ -148,7 +163,18 @@ void Grid::setDrawColorToColony(SDL_Renderer* renderer, int colony) const {
     }
 }
 
-bool Grid::killOneEnemyNeighbor(int row, int col, Person& p) {
+void Grid::updatePersonState(Person& p, int row, int col) {
+    switch (p.getType()) {
+        case PersonType::Breeder:
+            break;
+        case PersonType::Sailor:
+            break;
+        case PersonType::Settler:
+            break;
+    }
+}
+
+bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 
     int directions[9][2] = {0};
     int direction_count = 0;
@@ -169,16 +195,11 @@ bool Grid::killOneEnemyNeighbor(int row, int col, Person& p) {
         }
     }
 
-    // std::cout << direction_count << "\n";
-
     if (direction_count > 0) {
         std::uniform_int_distribution<int> distribution(0,direction_count);
         int* direction = directions[distribution(m_random_generator)];
         int r = direction[0];
         int c = direction[1];
-
-        std::cout << "Removing a mf. My Colony is: " << p.getColony() << "\n";
-        std::cout << r << " " << c << "\n";
 
         removePerson(row, col);
         removePerson(row + r, col + c);
@@ -186,5 +207,46 @@ bool Grid::killOneEnemyNeighbor(int row, int col, Person& p) {
         return true;
     } else {
         return false;
+    }
+}
+
+void Grid::attemptReproduction(Person& p, int row, int col) {
+    double colony_power = m_colony_count[p.getColony()];
+
+    double birth_probability = 0.1d + 0.1d*(colony_power/m_total_land);
+    std::uniform_real_distribution<double> distribution(0,1);
+    double choice = distribution(m_random_generator);
+
+    if (choice <= birth_probability) {
+        int directions[9][2] = {0};
+        int direction_count = 0;
+        
+        for (int i=-1; i<=1; i++) {
+            for (int j=-1; j<=1; j++) {
+                if (i | j) {
+                    if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
+                        Person& other1 = m_person_grid[row + i][col + j];
+                        Person& other2 = m_person_grid_next[row + i][col + j];
+                        if (!other1.getActive() && !other2.getActive()) {
+                            directions[direction_count][0] = i;
+                            directions[direction_count][1] = j;
+
+                            ++direction_count;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (direction_count > 0) {
+            std::uniform_int_distribution<int> distribution(0,direction_count);
+            int* direction = directions[distribution(m_random_generator)];
+            int r = direction[0];
+            int c = direction[1];
+
+            Person& child = m_person_grid_next[row + r][col + c];
+            child.setActive(true);
+            child.setColony(p.getColony());
+        }
     }
 }

@@ -20,15 +20,17 @@ public:
     void test();
 
 private:
+    static const int m_max_colony_count = 8;
     const int m_grid_size;
     int m_screen_width;
     int m_screen_height;
 
-    int total_land;
+    int m_total_land;
 
     std::vector<std::vector<bool>> m_terrain_grid;
     std::vector<std::vector<Person>> m_person_grid;
     std::vector<std::vector<Person>> m_person_grid_next;
+    std::vector<int> m_colony_count;
 
     std::vector<std::vector<SDL_Rect>> m_rects;
 
@@ -43,8 +45,12 @@ private:
         m_person_grid_next[row][col].setActive(false);
     }
 
+    void updateColonyCount();
+
     void rescaleGrid();
     void setDrawColorToColony(SDL_Renderer* renderer, int colony) const;
 
-    bool killOneEnemyNeighbor(int row, int col, Person& p);
+    void updatePersonState(Person& p, int row, int col);
+    bool killOneEnemyNeighbor(Person& p, int row, int col);
+    void attemptReproduction(Person& p, int row, int col);
 };

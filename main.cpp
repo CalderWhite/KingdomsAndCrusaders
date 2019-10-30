@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <unistd.h>
 
 #include <SDL.h>
 SDL_Window* window;
@@ -42,9 +44,11 @@ int main(int argc, char* argv[]) {
 
     SDL_Event e;
     bool running = true;
-	Grid g(10, SCREEN_WIDTH, SCREEN_HEIGHT);
+	Grid g(100, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	g.test();
+	std::cout << std::setprecision(9);
+	std::cout << std::fixed;
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -91,6 +95,8 @@ int main(int argc, char* argv[]) {
 		g.draw(renderer);
 
 		SDL_RenderPresent(renderer);
+
+		usleep(1e4);
     }
 
 	// Exit

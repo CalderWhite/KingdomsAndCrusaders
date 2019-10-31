@@ -1,13 +1,13 @@
 Grid grid;
 
 // GAME CONSTANTS
-int n = 200;
+int n = 100;
 int SPAWNS_PER_COLONY = 2;
 int NUM_COLONIES = 5; // max of 5
-int FRAME_RATE = 10; // decreasing this can be quite fascinating!
+int FRAME_RATE = 30; // decreasing this can be quite fascinating!
 
 // if you are interest in solely the colony vs colony behaviour, turn this off
-boolean ISLANDS = true;
+boolean ISLANDS = false;
 
 // PROCEDURAL ISLAND GENERATION CONSTANTS
 float NOISE_INCREMENT = 0.05*(200/float(n));
@@ -103,4 +103,6 @@ void draw() {
 
   clear();
   grid.render();
+  
+  text(frameRate, 10, 30); 
 }

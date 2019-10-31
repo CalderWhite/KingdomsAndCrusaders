@@ -27,12 +27,13 @@ cc_library(
         ":position",
         ":person_type",
     ],
+    data = ["fonts/freefont-20051206/FreeSans.ttf"],
     copts = [
         "-I/usr/include/SDL2",
     ],
     linkopts = [
         "-lSDL2",
-        "-lSDL2_image",
+        "-lSDL2_ttf",
         "-D_REENTRANT",
         "-ldl"
     ],

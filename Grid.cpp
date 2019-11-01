@@ -3,7 +3,6 @@
 #include <random>
 
 #include "Grid.h"
-#include "Position.h"
 
 Grid::Grid(int gs, int sw, int sh)
     : m_grid_size(gs), m_screen_width(sw), m_screen_height(sh), m_random_device(),
@@ -18,9 +17,11 @@ Grid::Grid(int gs, int sw, int sh)
 
     for (int r=0; r<m_grid_size; r++) {
         for (int c=0; c<m_grid_size; c++) {
-            // if (r == c) {
+            if (r > 10 && r < 15) {
+                m_terrain_grid[r][c] = false;
+            } else {
                 m_terrain_grid[r][c] = true;
-            // }
+            }
         }
     }
 
@@ -45,6 +46,10 @@ void Grid::resizeScreen(int s) {
     rescaleGrid();
 }
 
+void Grid::addPerson(Person& p, int row, int col) {
+    m_person_grid_next[row][col] = p;
+}
+
 void Grid::updatePeople() {
     // copy over the current state to the next state before processing
     for (int r=0; r<m_grid_size; r++) {
@@ -61,7 +66,6 @@ void Grid::updatePeople() {
 
             if (p.getActive()) {
                 bool murderer = killOneEnemyNeighbor(p, r, c);
-
                 if (!murderer) {
                     updatePersonState(p, r, c);
                     switch(p.getType()) {
@@ -69,6 +73,19 @@ void Grid::updatePeople() {
                             attemptReproduction(p, r, c);
                             break;
                         case PersonType::Sailor:
+                            int r_dir;
+                            int c_dir;
+                            p.getDirection(&r_dir, &c_dir);
+                            // std::cout << r_dir << " " << c_dir << "\n";
+                            if (r_dir == 0 && c_dir == 0) {
+                                p.setColony(0);
+                            }
+
+                            if (r+r_dir > -1 || r+r_dir < m_grid_size || c+c_dir > -1 || c+c_dir < m_grid_size) {
+                                m_person_grid_next[r+r_dir][c+c_dir] = p;
+                            }
+
+                            m_person_grid_next[r][c].setActive(false);
                             break;
                         case PersonType::Settler:
                             attemptReproduction(p, r, c);
@@ -96,14 +113,6 @@ void Grid::draw(SDL_Renderer* renderer) {
             SDL_RenderFillRect(renderer, &m_rects[r][c]);
         }
     }
-}
-
-void Grid::test() {
-    // vertically aligned standoff
-    m_person_grid_next[1][m_grid_size/2].setActive(true);
-    m_person_grid_next[1][m_grid_size/2].setColony(6);
-    m_person_grid_next[m_grid_size-2][m_grid_size/2].setActive(true);
-    m_person_grid_next[m_grid_size-2][m_grid_size/2].setColony(7);
 }
 
 void Grid::updateColonyCount() {
@@ -165,9 +174,38 @@ void Grid::setDrawColorToColony(SDL_Renderer* renderer, int colony) const {
 
 void Grid::updatePersonState(Person& p, int row, int col) {
     switch (p.getType()) {
-        case PersonType::Breeder:
+        case PersonType::Breeder: {
+            int directions[8][2] = {0};
+            int direction_count = 0;
+            for (int i=-1; i<=1; i++) {
+                for (int j=-1; j<=1; j++) {
+                    if (i | j) {
+                        if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
+                            if (!m_terrain_grid[row + i][col + j]) {
+                                directions[direction_count][0] = i;
+                                directions[direction_count][1] = j;
+
+                                ++direction_count;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (direction_count > 0) {
+                std::uniform_int_distribution<int> distribution(0, direction_count-1);
+                int* direction = directions[distribution(m_random_generator)];
+                int r = direction[0];
+                int c = direction[1];
+
+                p.setSails(r, c);
+            }
             break;
+        }
         case PersonType::Sailor:
+            if (m_terrain_grid[row][col]) {
+                p.settle();
+            }
             break;
         case PersonType::Settler:
             break;
@@ -176,7 +214,7 @@ void Grid::updatePersonState(Person& p, int row, int col) {
 
 bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 
-    int directions[9][2] = {0};
+    int directions[8][2] = {0};
     int direction_count = 0;
     
     for (int i=-1; i<=1; i++) {
@@ -196,7 +234,7 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
     }
 
     if (direction_count > 0) {
-        std::uniform_int_distribution<int> distribution(0,direction_count);
+        std::uniform_int_distribution<int> distribution(0, direction_count-1);
         int* direction = directions[distribution(m_random_generator)];
         int r = direction[0];
         int c = direction[1];
@@ -218,20 +256,22 @@ void Grid::attemptReproduction(Person& p, int row, int col) {
     double choice = distribution(m_random_generator);
 
     if (choice <= birth_probability) {
-        int directions[9][2] = {0};
+        int directions[8][2] = {0};
         int direction_count = 0;
         
         for (int i=-1; i<=1; i++) {
             for (int j=-1; j<=1; j++) {
                 if (i | j) {
                     if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
-                        Person& other1 = m_person_grid[row + i][col + j];
-                        Person& other2 = m_person_grid_next[row + i][col + j];
-                        if (!other1.getActive() && !other2.getActive()) {
-                            directions[direction_count][0] = i;
-                            directions[direction_count][1] = j;
+                        if (m_terrain_grid[row + i][col + j]) {
+                            Person& other1 = m_person_grid[row + i][col + j];
+                            Person& other2 = m_person_grid_next[row + i][col + j];
+                            if (!other1.getActive() && !other2.getActive()) {
+                                directions[direction_count][0] = i;
+                                directions[direction_count][1] = j;
 
-                            ++direction_count;
+                                ++direction_count;
+                            }
                         }
                     }
                 }
@@ -239,7 +279,7 @@ void Grid::attemptReproduction(Person& p, int row, int col) {
         }
 
         if (direction_count > 0) {
-            std::uniform_int_distribution<int> distribution(0,direction_count);
+            std::uniform_int_distribution<int> distribution(0, direction_count-1);
             int* direction = directions[distribution(m_random_generator)];
             int r = direction[0];
             int c = direction[1];

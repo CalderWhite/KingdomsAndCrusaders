@@ -1,9 +1,4 @@
 cc_library(
-    name = "position",
-    hdrs = ["Position.h"],
-)
-
-cc_library(
     name = "person_type",
     hdrs = ["PersonType.h"],
 )
@@ -13,9 +8,22 @@ cc_library(
     srcs = ["Person.cpp"],
     hdrs = ["Person.h"],
     deps = [
-        ":position",
         ":person_type",
     ]
+)
+
+cc_library(
+    name = "frame_counter",
+    srcs = ["FrameCounter.cpp"],
+    hdrs = ["FrameCounter.h"],
+    copts = [
+        "-I/usr/include/SDL2",
+    ],
+    linkopts = [
+        "-lSDL2",
+        "-D_REENTRANT",
+        "-ldl"
+    ],
 )
 
 cc_library(
@@ -24,16 +32,16 @@ cc_library(
     hdrs = ["Grid.h"],
     deps = [
         ":person",
-        ":position",
         ":person_type",
+        ":frame_counter",
+        "//third_party:perlin_noise",
     ],
-    data = ["fonts/freefont-20051206/FreeSans.ttf"],
+    data = ["fonts/freefont-20051206/FreeMonoBold.ttf"],
     copts = [
         "-I/usr/include/SDL2",
     ],
     linkopts = [
         "-lSDL2",
-        "-lSDL2_ttf",
         "-D_REENTRANT",
         "-ldl"
     ],
@@ -50,7 +58,7 @@ cc_binary(
     ],
     linkopts = [
         "-lSDL2",
-        "-lSDL2_image",
+        "-lSDL2_ttf",
         "-D_REENTRANT",
         "-ldl"
     ],

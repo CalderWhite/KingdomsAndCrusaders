@@ -9,6 +9,8 @@ Person::Person() {}
 void Person::setSails(int row_dir, int col_dir) {
     m_row_dir = row_dir;
     m_col_dir = col_dir;
+
+    m_type = PersonType::Sailor;
 }
 
 void Person::settle() {

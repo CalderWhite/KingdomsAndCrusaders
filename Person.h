@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PersonType.h"
-#include "Position.h"
 
 class Person {
 public:
@@ -10,8 +9,9 @@ public:
 
     void setSails(int row_dir, int col_dir);
 
-    inline Position getDirection() const {
-        return Position{m_row_dir, m_col_dir};
+    inline void getDirection(int* row, int* col) const {
+        *row = m_row_dir;
+        *col = m_col_dir;
     }
 
     void settle();

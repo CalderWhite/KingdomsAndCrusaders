@@ -14,10 +14,10 @@ public:
     Grid(int grid_size, int screen_width, int screen_height);
 
     void resizeScreen(int s);
+    void addPerson(Person& p, int row, int col);
 
     void updatePeople();
     void draw(SDL_Renderer* renderer);
-    void test();
 
 private:
     static const int m_max_colony_count = 8;

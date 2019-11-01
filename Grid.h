@@ -11,7 +11,8 @@
 class Grid {
 public:
 
-    Grid(int grid_size, int screen_width, int screen_height);
+    Grid(int grid_size, int screen_width, int screen_height, double perlin_frequency,
+         int perlin_octave, double perlin_min, double perlin_max);
 
     void resizeScreen(int s);
     void addPerson(Person& p, int row, int col);
@@ -24,6 +25,15 @@ private:
     const int m_grid_size;
     int m_screen_width;
     int m_screen_height;
+
+    // should be in the interval [0.1, 64.0]
+    double m_perlin_frequency;
+
+    // should be in the interval [1, 16]
+    int m_perlin_octaves;
+
+    double m_perlin_min;
+    double m_perlin_max;
 
     int m_total_land;
 

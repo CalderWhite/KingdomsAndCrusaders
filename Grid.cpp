@@ -2,10 +2,12 @@
 #include <iostream>
 #include <random>
 
+#include "third_party/PerlinNoise.hpp"
 #include "Grid.h"
 
-Grid::Grid(int gs, int sw, int sh)
-    : m_grid_size(gs), m_screen_width(sw), m_screen_height(sh), m_random_device(),
+Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
+    : m_grid_size(gs), m_screen_width(sw), m_screen_height(sh), m_perlin_frequency(pf),
+    m_perlin_octaves(po), m_perlin_min(pmin), m_perlin_max(pmax), m_random_device(),
     m_random_generator((m_random_device())) {
     
     m_terrain_grid.resize(m_grid_size, std::vector<bool>(m_grid_size));
@@ -15,12 +17,19 @@ Grid::Grid(int gs, int sw, int sh)
 
     m_terrain_grid[m_grid_size-1][0] = true;
 
+    // generate the island with perlin noise
+	uint32_t seed = m_random_generator();
+	siv::PerlinNoise perlin(seed);
+	double fr = m_grid_size / m_perlin_frequency;
+	double fc = m_grid_size / m_perlin_frequency;
+
     for (int r=0; r<m_grid_size; r++) {
         for (int c=0; c<m_grid_size; c++) {
-            if (r > 10 && r < 15) {
-                m_terrain_grid[r][c] = false;
-            } else {
+            double p_ = perlin.octaveNoise0_1(r / fr, c / fc, m_perlin_octaves);
+            if (p_ > m_perlin_min && p_ < m_perlin_max) {
                 m_terrain_grid[r][c] = true;
+            } else {
+                m_terrain_grid[r][c] = false;
             }
         }
     }
@@ -76,12 +85,8 @@ void Grid::updatePeople() {
                             int r_dir;
                             int c_dir;
                             p.getDirection(&r_dir, &c_dir);
-                            // std::cout << r_dir << " " << c_dir << "\n";
-                            if (r_dir == 0 && c_dir == 0) {
-                                p.setColony(0);
-                            }
 
-                            if (r+r_dir > -1 || r+r_dir < m_grid_size || c+c_dir > -1 || c+c_dir < m_grid_size) {
+                            if (r+r_dir > -1 && r+r_dir < m_grid_size && c+c_dir > -1 && c+c_dir < m_grid_size) {
                                 m_person_grid_next[r+r_dir][c+c_dir] = p;
                             }
 

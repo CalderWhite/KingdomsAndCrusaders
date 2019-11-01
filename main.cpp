@@ -1,6 +1,6 @@
 #include <iostream>
-#include <iomanip>
 #include <stdio.h>
+#include <stdint.h>
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -9,10 +9,9 @@ SDL_Window* window;
 #include "Grid.h"
 #include "FrameCounter.h"
 
-const int GLVersionMajor = 3;
-const int GLVersionMinor = 0;
-const int SCREEN_WIDTH = 1500;
-const int SCREEN_HEIGHT = 1500;
+// these are just the initial sizes. The grid will adjust when you resize the window
+const int SCREEN_WIDTH = 2000;
+const int SCREEN_HEIGHT = 2000;
 
 int setup() {
 	// Init
@@ -49,34 +48,33 @@ int main(int argc, char* argv[]) {
 		return code;
 	}
 
-    SDL_Event e;
+	// SIMULATION SPECIFIC SETUP
     bool running = true;
 	int grid_size = 300;
-	Grid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT);
+	Grid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 5.0, 1, 0.0, 0.4);
 	
 	Person p = Person(1);
 	g.addPerson(p, 1, grid_size/2);
 
+	// DISPLAY SETUP
 	FrameCounter frame_counter;
-
-	std::cout << std::setprecision(9);
-	std::cout << std::fixed;
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	TTF_Font* free_mono_font = TTF_OpenFont("fonts/freefont-20051206/FreeMonoBold.ttf", 24);
+	TTF_Font* free_mono_font = TTF_OpenFont("fonts/freefont-20051206/FreeMonoBold.ttf", 32);
 	if (!free_mono_font) {
 		std::cerr << "TTF error: " << TTF_GetError() << "\n";
 		exit(1);
 	}
 	
-	SDL_Color c_black = {0, 0, 0};
+	SDL_Color f_color = {255, 0, 0};
 	SDL_Rect fps_rect;
 	fps_rect.x = 0;
 	fps_rect.y = 0;
 	fps_rect.h = 0;
 	fps_rect.w = 0;
 
+	SDL_Event e;
 	frame_counter.init();
     while (running) {
         while (SDL_PollEvent(&e)) {
@@ -115,7 +113,7 @@ int main(int argc, char* argv[]) {
 
 		TTF_SizeText(free_mono_font, fps_text, &fps_rect.w, &fps_rect.h);
 
-		SDL_Surface* surfaceMessage = TTF_RenderText_Solid(free_mono_font, fps_text, c_black);
+		SDL_Surface* surfaceMessage = TTF_RenderText_Solid(free_mono_font, fps_text, f_color);
 		SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 		SDL_RenderCopy(renderer, message, NULL, &fps_rect);
 

@@ -55,6 +55,27 @@ void Grid::resizeScreen(int s) {
     rescaleGrid();
 }
 
+void Grid::addRandomOnLand(int colony_count, int n) {
+    for (int i=0; i<colony_count; i++) {
+        for (int j=0; j<n; j++) {
+            std::uniform_int_distribution<int> distribution(0, m_grid_size*m_grid_size-1);
+            int rand = distribution(m_random_generator);
+            int r = rand / m_grid_size;
+            int c =  rand % m_grid_size;
+
+            while (!m_terrain_grid[r][c]) {
+                std::uniform_int_distribution<int> distribution(0, m_grid_size*m_grid_size-1);
+                int rand = distribution(m_random_generator);
+                r = rand / m_grid_size;
+                c =  rand % m_grid_size;
+            }
+
+            Person p(i);
+            addPerson(p, r, c);
+        }
+    }
+}
+
 void Grid::addPerson(Person& p, int row, int col) {
     m_person_grid_next[row][col] = p;
 }
@@ -169,10 +190,11 @@ void Grid::setDrawColorToColony(SDL_Renderer* renderer, int colony) const {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             break;
         case 6:
-            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-            break;
-        case 7:
             SDL_SetRenderDrawColor(renderer, 255, 192, 203, 255);
+            break;
+        default:
+            std::cerr << "Exceeded colony max!!";
+            exit(1);
             break;
     }
 }

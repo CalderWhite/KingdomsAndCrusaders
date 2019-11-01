@@ -16,6 +16,7 @@ public:
 
     void resizeScreen(int s);
     void addPerson(Person& p, int row, int col);
+    void addRandomOnLand(int colony_count, int n);
 
     void updatePeople();
     void draw(SDL_Renderer* renderer);

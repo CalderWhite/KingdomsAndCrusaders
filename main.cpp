@@ -12,6 +12,8 @@ SDL_Window* window;
 // these are just the initial sizes. The grid will adjust when you resize the window
 const int SCREEN_WIDTH = 2000;
 const int SCREEN_HEIGHT = 2000;
+const int FPS_MAX = 20;
+const int TARGET_MS = 1000/FPS_MAX;
 
 int setup() {
 	// Init
@@ -50,11 +52,9 @@ int main(int argc, char* argv[]) {
 
 	// SIMULATION SPECIFIC SETUP
     bool running = true;
-	int grid_size = 300;
-	Grid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 5.0, 1, 0.0, 0.4);
-	
-	Person p = Person(1);
-	g.addPerson(p, 1, grid_size/2);
+	int grid_size = 400;
+	Grid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 7.0, 1, 0.0, 0.45);
+	g.addRandomOnLand(7, 1);
 
 	// DISPLAY SETUP
 	FrameCounter frame_counter;
@@ -100,6 +100,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
+		Uint32 t1 = SDL_GetTicks();
+
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
@@ -119,7 +121,11 @@ int main(int argc, char* argv[]) {
 
 		SDL_RenderPresent(renderer);
 
-		// SDL_Delay(100);
+		Uint32 t2 = SDL_GetTicks();
+		int delay = TARGET_MS - (t2 - t1);
+		if (delay > 0) {
+			SDL_Delay(delay);
+		}
     }
 
 	// Exit

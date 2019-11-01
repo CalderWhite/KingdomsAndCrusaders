@@ -1,13 +1,13 @@
 Grid grid;
 
 // GAME CONSTANTS
-int n = 100;
+int n = 200;
 int SPAWNS_PER_COLONY = 2;
 int NUM_COLONIES = 5; // max of 5
 int FRAME_RATE = 30; // decreasing this can be quite fascinating!
 
 // if you are interest in solely the colony vs colony behaviour, turn this off
-boolean ISLANDS = false;
+boolean ISLANDS = true;
 
 // PROCEDURAL ISLAND GENERATION CONSTANTS
 float NOISE_INCREMENT = 0.05*(200/float(n));
@@ -46,7 +46,7 @@ boolean[][] generateTerrain(int terrainSize) {
 
 void setup() {
   // WINDOW/GRAPHICS SETUP
-  size(800, 800);
+  size(1600, 1600);
   fill(0);
   noStroke();
   frameRate(FRAME_RATE);

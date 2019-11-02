@@ -13,7 +13,6 @@ Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
     m_terrain_grid.resize(m_grid_size, std::vector<bool>(m_grid_size));
     m_person_grid.resize(m_grid_size, std::vector<Person>(m_grid_size));
     m_person_grid_next.resize(m_grid_size, std::vector<Person>(m_grid_size));
-    m_rects.resize(m_grid_size, std::vector<SDL_Rect>(m_grid_size));
 
     m_terrain_grid[m_grid_size-1][0] = true;
 
@@ -43,16 +42,7 @@ Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
         }
     }
 
-    // init all the rects
-    rescaleGrid();
-
     m_colony_count.resize(m_max_colony_count, 0);
-}
-
-void Grid::resizeScreen(int s) {
-    m_screen_height = s;
-    m_screen_width = s;
-    rescaleGrid();
 }
 
 void Grid::addRandomOnLand(int colony_count, int n) {
@@ -123,24 +113,6 @@ void Grid::updatePeople() {
     }
 }
 
-void Grid::draw(SDL_Renderer* renderer) {
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
-            Person& p = m_person_grid[r][c];
-            if (p.getActive()) {
-                setDrawColorToColony(renderer, p.getColony());
-                // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            } else if (m_terrain_grid[r][c]) {
-                SDL_SetRenderDrawColor(renderer, 237, 232, 175, 255);
-            } else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-            }
-
-            SDL_RenderFillRect(renderer, &m_rects[r][c]);
-        }
-    }
-}
-
 void Grid::updateColonyCount() {
     for (int i=0; i<static_cast<int>(m_colony_count.size()); i++) {
         m_colony_count[i] = 0;
@@ -153,49 +125,6 @@ void Grid::updateColonyCount() {
                 ++m_colony_count[p.getColony()];
             }
         }
-    }
-}
-
-void Grid::rescaleGrid() {
-    int l = m_screen_width / m_grid_size;
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
-            SDL_Rect& rect = m_rects[r][c];
-            rect.w = l;
-            rect.h = l;
-            rect.x = l*c;
-            rect.y = l*r;
-        }
-    }
-}
-
-void Grid::setDrawColorToColony(SDL_Renderer* renderer, int colony) const {
-    switch (colony) {
-        case 0:
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            break;
-        case 1:
-            SDL_SetRenderDrawColor(renderer, 238, 0, 255, 255);
-            break;
-        case 2:
-            SDL_SetRenderDrawColor(renderer, 255, 250, 0, 255);
-            break;
-        case 3:
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            break;
-        case 4:
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            break;
-        case 5:
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            break;
-        case 6:
-            SDL_SetRenderDrawColor(renderer, 255, 192, 203, 255);
-            break;
-        default:
-            std::cerr << "Exceeded colony max!!";
-            exit(1);
-            break;
     }
 }
 
@@ -278,7 +207,7 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 void Grid::attemptReproduction(Person& p, int row, int col) {
     double colony_power = m_colony_count[p.getColony()];
 
-    double birth_probability = 0.1d + 0.1d*(colony_power/m_total_land);
+    double birth_probability = 0.1 + 0.1*(colony_power/m_total_land);
     std::uniform_real_distribution<double> distribution(0,1);
     double choice = distribution(m_random_generator);
 

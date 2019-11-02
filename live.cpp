@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 SDL_Window* window;
 
-#include "Grid.h"
+#include "SDLGrid.h"
 #include "FrameCounter.h"
 
 // these are just the initial sizes. The grid will adjust when you resize the window
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 	// SIMULATION SPECIFIC SETUP
     bool running = true;
 	int grid_size = 400;
-	Grid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 7.0, 1, 0.0, 0.45);
+	SDLGrid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 7.0, 1, 0.0, 0.45);
 	g.addRandomOnLand(7, 1);
 
 	// DISPLAY SETUP
@@ -89,14 +89,14 @@ int main(int argc, char* argv[]) {
                             break;
                     }
                     break;
-				case SDL_WINDOWEVENT:
-					switch(e.window.event) {
-						case SDL_WINDOWEVENT_RESIZED:
-							int s = e.window.data1 < e.window.data2 ? e.window.data1 : e.window.data2;
-							g.resizeScreen(s);
-						break;
-					}
-					break;
+                case SDL_WINDOWEVENT:
+                    switch(e.window.event) {
+                        case SDL_WINDOWEVENT_RESIZED:
+                            int s = e.window.data1 < e.window.data2 ? e.window.data1 : e.window.data2;
+                            g.resizeScreen(s);
+                            break;
+                    }
+                    break;
             }
         }
 

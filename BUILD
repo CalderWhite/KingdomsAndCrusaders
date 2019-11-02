@@ -36,7 +36,15 @@ cc_library(
         ":frame_counter",
         "//third_party:perlin_noise",
     ],
-    data = ["fonts/freefont-20051206/FreeMonoBold.ttf"],
+)
+
+cc_library(
+    name = "sdl_grid",
+    srcs = ["SDLGrid.cpp"],
+    hdrs = ["SDLGrid.h"],
+    deps = [
+        ":grid",
+    ],
     copts = [
         "-I/usr/include/SDL2",
     ],
@@ -48,11 +56,12 @@ cc_library(
 )
 
 cc_binary(
-    name = "main",
-    srcs = ["main.cpp"],
+    name = "live",
+    srcs = ["live.cpp"],
     deps = [
-        "grid",
+        ":sdl_grid",
     ],
+    data = ["fonts/freefont-20051206/FreeMonoBold.ttf"],
     copts = [
         "-I/usr/include/SDL2",
     ],
@@ -62,4 +71,15 @@ cc_binary(
         "-D_REENTRANT",
         "-ldl"
     ],
+)
+
+cc_binary(
+    name = "video",
+    srcs = ["video.cpp"],
+    deps = [
+        "grid",
+    ],
+    copts = [
+        "-I/usr/include/opencv2"
+    ]
 )

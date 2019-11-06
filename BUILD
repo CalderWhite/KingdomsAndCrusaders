@@ -33,7 +33,6 @@ cc_library(
     deps = [
         ":person",
         ":person_type",
-        ":frame_counter",
         "//third_party:perlin_noise",
     ],
 )
@@ -60,6 +59,7 @@ cc_binary(
     srcs = ["live.cpp"],
     deps = [
         ":sdl_grid",
+        ":frame_counter",
     ],
     data = ["fonts/freefont-20051206/FreeMonoBold.ttf"],
     copts = [

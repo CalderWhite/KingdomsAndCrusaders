@@ -1,4 +1,5 @@
 #include <iostream>
+#include <signal.h>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/video.hpp>
@@ -8,10 +9,18 @@
 
 #include "CVGrid.h"
 
-// due to the complexities of video encoding, ffmpeg is required to run this
+cv::VideoWriter video;
+
+void signal_handler(int signum) {
+    std::cerr << "Caught signal" << signum << "\n";
+
+    video.release();
+
+    exit(signum);
+}
 
 int main(){
-    int screen_width = 400;
+    int screen_width = 1200;
     int grid_size = 400;
     int fps = 30;
 
@@ -19,8 +28,10 @@ int main(){
     g.addRandomOnLand(7, 1);
 
     cv::Size video_size(screen_width, screen_width);
-    cv::VideoWriter video("output.avi", cv::VideoWriter::fourcc('F', 'M', 'P', '4'), fps, video_size);
-    
+    video.open("output.webm", cv::VideoWriter::fourcc('V','P','0','9'), fps, video_size);
+
+    signal(SIGINT, signal_handler);
+
     cv::Mat frame(video_size, CV_8UC3, cv::Scalar(0, 0, 0));
     for (int frame_index=0;;frame_index++) {
         g.updatePeople();

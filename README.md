@@ -6,14 +6,14 @@ a bit more, I highly recommend exploring the `processing` directory, as its code
 
 There are 2 main files, `live.cpp` and `video.cpp`. `live` is 100% cross platform and has been tested on 64 bit windows 10 and ubuntu 18.04. It makes use [SDL](https://www.libsdl.org/) for graphics, and can achieve great speeds in real time. `video` has only been tested in linux environments, as it makes use of opencv, libav and other third party modules like libvpx for encoding videos of the simulations. Due to the heavy use of these dynamic libraries, the cross platform functionality of this target is not guaranteed. This poses no issue as the purpose of the target is to generate videos that will be shared across platforms, not the `video` binary itself.
 
-# Building
+## Building
 
 [Bazel](https://bazel.build/) was used for this project. There are 2 main targets you need to worry about: `live` and `video`. For `live`, you can run `bazel run live`. For video, to generate the binary call `bazel build video` and then call the binary in whichever directory you want it to place the generated video in via `<repository root>/bazel-bin/video`.
 
 To run `live` you must have the dynamic SDL libaries installed on your system. For `video` you must have all the `opencv` dynamic libraries as well as any encoder libraries such as `libvpx`. I belive you also need the opencv_ffmpeg dynamic library as opencv calls libav/ffmpeg to make use of its lower level operations with the videos.
 
 
-# Codebase Descriptions
+## File Descriptions
 
 | Class/Header/Main File | Purpose                                                                                                                                                                                                                                                                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

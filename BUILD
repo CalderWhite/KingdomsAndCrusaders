@@ -106,5 +106,6 @@ cc_binary(
         "-lopencv_highgui",
         "-lopencv_video",
         "-lopencv_videoio",
+        "-lpthread"
     ],
 )

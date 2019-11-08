@@ -22,6 +22,9 @@ bool need_frame = false;
 
 int frame_count = 0;
 
+std::thread enc_loop;
+std::thread grid_loop;
+
 VideoGrid g(grid_size, screen_width, screen_width, 7.0, 1, 0.0, 0.45);
 ge_GIF* gif;
 
@@ -36,7 +39,11 @@ int getTimeDiff(
 }
 
 void signal_handler(int signum) {
-    std::cerr << "Caught signal" << signum << "\n";
+    std::cerr << "\n\nCaught signal " << signum << ", safely exiting...\n";
+
+    running = false;
+    enc_loop.join();
+    grid_loop.join();
 
     ge_close_gif(gif);
 
@@ -95,17 +102,13 @@ int main(){
 
     signal(SIGINT, signal_handler);
 
-    std::thread enc_loop(encodeLoop);
-    std::thread grid_loop(gridUpdateLoop);
+    enc_loop = std::thread(encodeLoop);
+    grid_loop = std::thread(gridUpdateLoop);
 
     char c;
     while (c != 'q') {
         std::cin >> c;
     }
-
-    running = false;
-    enc_loop.join();
-    grid_loop.join();
 
     signal_handler(0);
 }

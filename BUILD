@@ -74,19 +74,11 @@ cc_binary(
 )
 
 cc_library(
-    name = "cv_grid",
-    srcs = ["CVGrid.cpp"],
-    hdrs = ["CVGrid.h"],
+    name = "video_grid",
+    srcs = ["VideoGrid.cpp"],
+    hdrs = ["VideoGrid.h"],
     deps = [
         ":grid",
-    ],
-    copts = [
-        "-I/usr/local/include/opencv4",
-    ],
-    linkopts = [
-        "-L/usr/local/lib",
-        "-lopencv_imgproc",
-        "-lopencv_core",
     ],
 )
 
@@ -94,18 +86,10 @@ cc_binary(
     name = "video",
     srcs = ["video.cpp"],
     deps = [
-        "cv_grid",
-    ],
-    copts = [
-        "-I/usr/local/include/opencv4",
+        ":video_grid",
+        "//third_party/gifenc:gifenc",
     ],
     linkopts = [
-        "-L/usr/local/lib",
-        "-lopencv_core",
-        "-lopencv_imgproc",
-        "-lopencv_highgui",
-        "-lopencv_video",
-        "-lopencv_videoio",
-        "-lpthread"
+        "-lpthread",
     ],
 )

@@ -34,6 +34,8 @@ protected:
 
     int m_total_land;
 
+    double m_colony_powers[m_max_colony_count];
+
     std::vector<std::vector<bool>> m_terrain_grid;
     std::vector<std::vector<Person>> m_person_grid;
     std::vector<std::vector<Person>> m_person_grid_next;

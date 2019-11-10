@@ -131,6 +131,10 @@ void Grid::updateColonyCount() {
             }
         }
     }
+
+    for (int i=0; i<m_max_colony_count; i++) {
+        m_colony_powers[i] = 0.1 + 0.3*(m_colony_count[i]/m_total_land);
+    }
 }
 
 void Grid::updatePersonState(Person& p, int row, int col) {
@@ -188,7 +192,7 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
         for (int j=-1; j<=1; j++) {
             if (i | j) {
                 if (on_edge) {
-                    if (outOfBounds(row + i, col + j) {
+                    if (outOfBounds(row + i, col + j)) {
                         continue;
                     }
                 }
@@ -220,9 +224,8 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 }
 
 void Grid::attemptReproduction(Person& p, int row, int col) {
-    double colony_power = m_colony_count[p.getColony()];
+    double birth_probability = m_colony_powers[p.getColony()];
 
-    double birth_probability = 0.1 + 0.3*(colony_power/m_total_land);
     std::uniform_real_distribution<double> distribution(0,1);
     double choice = distribution(m_random_generator);
 

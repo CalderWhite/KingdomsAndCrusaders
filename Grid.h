@@ -51,7 +51,19 @@ protected:
     }
 
     inline bool onEdge(int row, int col) {
-        return row % (m_grid_size-1) == 0 || col % (m_grid_size-1) == 0;
+        if (row == 0 || row == m_grid_size-1 || col == 0 || col == m_grid_size-1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    inline bool outOfBounds(int row, int col) {
+        if (row < 0 || row == m_grid_size || col < 0 || col == m_grid_size) {
+            return true;
+        }
+
+        return false;
     }
 
     void updateColonyCount();

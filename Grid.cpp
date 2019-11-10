@@ -99,8 +99,7 @@ void Grid::updatePeople() {
 
                             bool on_edge = onEdge(r, c);
                             if (on_edge) {
-                                if (r+r_dir > -1 && r+r_dir < m_grid_size && c+c_dir > -1 &&
-                                    c+c_dir < m_grid_size) {
+                                if (outOfBounds(r + r_dir, c + c_dir)) {
                                     continue;
                                 }
                             }
@@ -144,8 +143,7 @@ void Grid::updatePersonState(Person& p, int row, int col) {
                 for (int j=-1; j<=1; j++) {
                     if (i | j) {
                         if (on_edge) {
-                            if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
-                                col + j < m_grid_size) {
+                            if (outOfBounds(row + i, col + j)) {
                                 continue;
                             }
                         }
@@ -184,14 +182,13 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 
     int directions[8][2] = {0};
     int direction_count = 0;
-   
+
     bool on_edge = onEdge(row, col);
     for (int i=-1; i<=1; i++) {
         for (int j=-1; j<=1; j++) {
             if (i | j) {
                 if (on_edge) {
-                    if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
-                        col + j < m_grid_size) {
+                    if (outOfBounds(row + i, col + j) {
                         continue;
                     }
                 }
@@ -232,14 +229,13 @@ void Grid::attemptReproduction(Person& p, int row, int col) {
     if (choice <= birth_probability) {
         int directions[8][2] = {0};
         int direction_count = 0;
-       
+
         bool on_edge = onEdge(row, col);
         for (int i=-1; i<=1; i++) {
             for (int j=-1; j<=1; j++) {
                 if (i | j) {
                     if (on_edge) {
-                        if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
-                            col + j < m_grid_size) {
+                        if (outOfBounds(row + i, col + j)) {
                             continue;
                         }
                     }

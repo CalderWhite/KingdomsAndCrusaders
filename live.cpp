@@ -12,7 +12,7 @@ SDL_Window* window;
 // these are just the initial sizes. The grid will adjust when you resize the window
 const int SCREEN_WIDTH = 2000;
 const int SCREEN_HEIGHT = 2000;
-const int FPS_MAX = 20;
+const int FPS_MAX = 30;
 const int TARGET_MS = 1000/FPS_MAX;
 
 int setup() {
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
 	// SIMULATION SPECIFIC SETUP
     bool running = true;
-	int grid_size = 400;
+	int grid_size = 300;
 	SDLGrid g(grid_size, SCREEN_WIDTH, SCREEN_HEIGHT, 7.0, 1, 0.0, 0.45);
 	g.addRandomOnLand(7, 1);
 

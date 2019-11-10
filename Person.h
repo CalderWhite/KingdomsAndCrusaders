@@ -4,19 +4,19 @@
 
 class Person {
 public:
-    Person(int colony);
+    Person(char colony);
     Person();
 
-    void setSails(int row_dir, int col_dir);
+    void setSails(char row_dir, char col_dir);
 
-    inline void getDirection(int* row, int* col) const {
+    inline void getDirection(char* row, char* col) const {
         *row = m_row_dir;
         *col = m_col_dir;
     }
 
     void settle();
 
-    inline int getColony() const {
+    inline char getColony() const {
         return m_colony;
     }
 
@@ -35,10 +35,10 @@ public:
     void setActive(bool s);
 
 private:
-    int m_colony;
+    char m_colony;
     
-    int m_row_dir = 0;
-    int m_col_dir = 0;
+    char m_row_dir = 0;
+    char m_col_dir = 0;
 
     // this is needed since the Person grid is initialized with a bunch of empty people
     bool m_active = false;

@@ -93,8 +93,8 @@ void Grid::updatePeople() {
                             attemptReproduction(p, r, c);
                             break;
                         case PersonType::Sailor:
-                            int r_dir;
-                            int c_dir;
+                            char r_dir;
+                            char c_dir;
                             p.getDirection(&r_dir, &c_dir);
 
                             if (r+r_dir > -1 && r+r_dir < m_grid_size && c+c_dir > -1 && c+c_dir < m_grid_size) {
@@ -207,7 +207,7 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 void Grid::attemptReproduction(Person& p, int row, int col) {
     double colony_power = m_colony_count[p.getColony()];
 
-    double birth_probability = 0.1 + 0.1*(colony_power/m_total_land);
+    double birth_probability = 0.1 + 0.3*(colony_power/m_total_land);
     std::uniform_real_distribution<double> distribution(0,1);
     double choice = distribution(m_random_generator);
 

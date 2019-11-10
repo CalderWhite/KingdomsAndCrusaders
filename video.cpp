@@ -13,9 +13,9 @@ extern "C" {
 #include "VideoGrid.h"
 
 const int screen_width = 800;
-const int grid_size = 200;
+const int grid_size = 800;
 const int ms_delay = 3;
-const int fps = 100/ms_delay;
+const float fps = 100/ms_delay;
 
 bool running = true;
 bool need_frame = false;
@@ -25,7 +25,7 @@ int frame_count = 0;
 std::thread enc_loop;
 std::thread grid_loop;
 
-VideoGrid g(grid_size, screen_width, screen_width, 7.0, 1, 0.0, 0.45);
+VideoGrid g(grid_size, screen_width, screen_width, 10.0, 1, 0.0, 0.45);
 ge_GIF* gif;
 
 std::chrono::high_resolution_clock::time_point getTime() {
@@ -74,13 +74,16 @@ void encodeLoop() {
 
         ++frame_count;
 
-        if (frame_count % fps == 0) {
+        if (frame_count % static_cast<int>(fps) == 0) {
+            // this calculation works since this is called only once every second of video is generated.
+            // so, the difference in time between the last time it is called and this time is 1 second if we are
+            // running at 1x speed.
             auto t2 = getTime();
             float gen_speed = 1000.0/getTimeDiff(t1, t2);
 
             t1 = t2;
 
-            int seconds = frame_count / fps;
+            int seconds = static_cast<float>(frame_count) / fps;
             int minutes = seconds / 60;
             printf("\033[K" "\033[s");
             std::cout << "Video time: " << minutes << "m " << (seconds%60) << "s "
@@ -95,10 +98,14 @@ void encodeLoop() {
     }
 }
 
-int main(){
-    g.addRandomOnLand(7, 1);
+int main(int argc, char* argv[]){
+    if (argc < 2) {
+        std::cerr << "No file name supplied!\n";
+        exit(1);
+    }
+    g.addRandomOnLand(4, 1);
 
-    gif = ge_new_gif("output.gif", screen_width, screen_width, g.getPalette(), 4, 0);
+    gif = ge_new_gif(argv[1], screen_width, screen_width, g.getPalette(), 4, 0);
 
     signal(SIGINT, signal_handler);
 

@@ -92,18 +92,24 @@ void Grid::updatePeople() {
                         case PersonType::Breeder:
                             attemptReproduction(p, r, c);
                             break;
-                        case PersonType::Sailor:
+                        case PersonType::Sailor: {
                             char r_dir;
                             char c_dir;
                             p.getDirection(&r_dir, &c_dir);
 
-                            if (r+r_dir > -1 && r+r_dir < m_grid_size && c+c_dir > -1 && c+c_dir < m_grid_size) {
-                                m_person_grid_next[r+r_dir][c+c_dir] = p;
+                            bool on_edge = onEdge(r, c);
+                            if (on_edge) {
+                                if (r+r_dir > -1 && r+r_dir < m_grid_size && c+c_dir > -1 &&
+                                    c+c_dir < m_grid_size) {
+                                    continue;
+                                }
                             }
+
+                            m_person_grid_next[r+r_dir][c+c_dir] = p;
 
                             m_person_grid_next[r][c].setActive(false);
                             break;
-                        case PersonType::Settler:
+                        } case PersonType::Settler:
                             attemptReproduction(p, r, c);
                             break;
                     }
@@ -133,16 +139,22 @@ void Grid::updatePersonState(Person& p, int row, int col) {
         case PersonType::Breeder: {
             int directions[8][2] = {0};
             int direction_count = 0;
+            bool on_edge = onEdge(row, col);
             for (int i=-1; i<=1; i++) {
                 for (int j=-1; j<=1; j++) {
                     if (i | j) {
-                        if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
-                            if (!m_terrain_grid[row + i][col + j]) {
-                                directions[direction_count][0] = i;
-                                directions[direction_count][1] = j;
-
-                                ++direction_count;
+                        if (on_edge) {
+                            if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
+                                col + j < m_grid_size) {
+                                continue;
                             }
+                        }
+
+                        if (!m_terrain_grid[row + i][col + j]) {
+                            directions[direction_count][0] = i;
+                            directions[direction_count][1] = j;
+
+                            ++direction_count;
                         }
                     }
                 }
@@ -172,18 +184,24 @@ bool Grid::killOneEnemyNeighbor(Person& p, int row, int col) {
 
     int directions[8][2] = {0};
     int direction_count = 0;
-    
+   
+    bool on_edge = onEdge(row, col);
     for (int i=-1; i<=1; i++) {
         for (int j=-1; j<=1; j++) {
             if (i | j) {
-                if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
-                    Person& enemy = m_person_grid[row + i][col + j];
-                    if (enemy.getActive() && enemy.getColony() != p.getColony()) {
-                        directions[direction_count][0] = i;
-                        directions[direction_count][1] = j;
-
-                        ++direction_count;
+                if (on_edge) {
+                    if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
+                        col + j < m_grid_size) {
+                        continue;
                     }
+                }
+
+                Person& enemy = m_person_grid[row + i][col + j];
+                if (enemy.getActive() && enemy.getColony() != p.getColony()) {
+                    directions[direction_count][0] = i;
+                    directions[direction_count][1] = j;
+
+                    ++direction_count;
                 }
             }
         }
@@ -214,20 +232,26 @@ void Grid::attemptReproduction(Person& p, int row, int col) {
     if (choice <= birth_probability) {
         int directions[8][2] = {0};
         int direction_count = 0;
-        
+       
+        bool on_edge = onEdge(row, col);
         for (int i=-1; i<=1; i++) {
             for (int j=-1; j<=1; j++) {
                 if (i | j) {
-                    if (row + i > -1 && row + i < m_grid_size && col + j > -1 && col + j < m_grid_size) {
-                        if (m_terrain_grid[row + i][col + j]) {
-                            Person& other1 = m_person_grid[row + i][col + j];
-                            Person& other2 = m_person_grid_next[row + i][col + j];
-                            if (!other1.getActive() && !other2.getActive()) {
-                                directions[direction_count][0] = i;
-                                directions[direction_count][1] = j;
+                    if (on_edge) {
+                        if (row + i > -1 && row + i < m_grid_size && col + j > -1 &&
+                            col + j < m_grid_size) {
+                            continue;
+                        }
+                    }
 
-                                ++direction_count;
-                            }
+                    if (m_terrain_grid[row + i][col + j]) {
+                        Person& other1 = m_person_grid[row + i][col + j];
+                        Person& other2 = m_person_grid_next[row + i][col + j];
+                        if (!other1.getActive() && !other2.getActive()) {
+                            directions[direction_count][0] = i;
+                            directions[direction_count][1] = j;
+
+                            ++direction_count;
                         }
                     }
                 }

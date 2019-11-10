@@ -50,6 +50,10 @@ protected:
         m_person_grid_next[row][col].setActive(false);
     }
 
+    inline bool onEdge(int row, int col) {
+        return row % (m_grid_size-1) == 0 || col % (m_grid_size-1) == 0;
+    }
+
     void updateColonyCount();
 
     void updatePersonState(Person& p, int row, int col);

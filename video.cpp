@@ -12,8 +12,8 @@ extern "C" {
 
 #include "VideoGrid.h"
 
-const int screen_width = 800;
-const int grid_size = 800;
+const int screen_width = 400;
+const int grid_size = 400;
 const int ms_delay = 3;
 const float fps = 100/ms_delay;
 

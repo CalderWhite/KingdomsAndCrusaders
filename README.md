@@ -8,7 +8,7 @@ There are 2 main files, `live.cpp` and `video.cpp`. `live` is 100% cross platfor
 
 ## Building
 
-[Bazel](https://bazel.build/) was used for this project. There are 2 main targets you need to worry about: `live` and `video`. For `live`, you can run `bazel run live`. For video, to generate the binary call `bazel build video` and then call the binary in whichever directory you want it to place the generated video in via `<repository root>/bazel-bin/video`.
+[Bazel](https://bazel.build/) was used for this project. There are 2 main targets you need to worry about: `live` and `video`. For `live`, you can run `bazel run live --compilation_mode=opt`. For video, to generate the binary call `bazel build video --compilation_mode=opt` and then call the binary in whichever directory you want it to place the generated video in via `<repository root>/bazel-bin/video`.
 
 To run `live` you must have the dynamic SDL libaries installed on your system. `video` has no third party requirements.
 

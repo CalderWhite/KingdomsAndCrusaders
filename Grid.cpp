@@ -97,6 +97,11 @@ void Grid::updatePeople() {
                             char c_dir;
                             p.getDirection(&r_dir, &c_dir);
 
+
+			    // remove where the sailor was before checking if it can go forward
+			    // this way sailors can sail off the map.
+                            m_person_grid_next[r][c].setActive(false);
+
                             bool on_edge = onEdge(r, c);
                             if (on_edge) {
                                 if (outOfBounds(r + r_dir, c + c_dir)) {
@@ -105,8 +110,6 @@ void Grid::updatePeople() {
                             }
 
                             m_person_grid_next[r+r_dir][c+c_dir] = p;
-
-                            m_person_grid_next[r][c].setActive(false);
                             break;
                         } case PersonType::Settler:
                             attemptReproduction(p, r, c);

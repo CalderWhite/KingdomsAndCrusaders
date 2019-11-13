@@ -136,7 +136,8 @@ void Grid::updateColonyCount() {
     }
 
     for (int i=0; i<m_max_colony_count; i++) {
-        m_colony_powers[i] = 0.1 + 0.3*(m_colony_count[i]/m_total_land);
+        double ownership = static_cast<double>(m_colony_count[i])/m_total_land;
+        m_colony_powers[i] = 0.1 + 0.2*ownership;
     }
 }
 

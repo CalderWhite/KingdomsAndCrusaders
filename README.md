@@ -1,6 +1,6 @@
 # KingdomsAndCrusaders
 
-<image src="https://storage.googleapis.com/kingdoms-and-crusaders/perfect_400x400.gif" />
+<image src="https://storage.googleapis.com/kingdoms-and-crusaders/small_400x400.gif" height="800" />
 
 This repository was originally dedicated to the processing version of this software for my Grade 12 Computer Science class.
 The assignment was to simulate anything of your choice using a basic ruleset. A pdf of the design document for the assignment called `design_doc.pdf` describes in detail how the simulation works. If you are looking to understand the algorithms

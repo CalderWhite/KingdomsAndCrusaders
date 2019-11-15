@@ -1,6 +1,9 @@
 # KingdomsAndCrusaders
 
-<image src="https://storage.googleapis.com/kingdoms-and-crusaders/small_400x400.gif" height="800" />
+<!-- Sadly enough, github markdown doesn't allow me to set the css property image-rendering: pixelate.
+     Because of this I am forced to scale up the gifs I use in the md files. Otherwise I could just let the browser do that
+     and not have to worry about it fuzzing all the pixels. !-->
+<image src="https://github.com/CalderWhite/KingdomsAndCrusaders/raw/storage/small_scaleup_400x400_to_800x800.gif?raw=true" height="800" />
 
 This repository was originally dedicated to the processing version of this software for my Grade 12 Computer Science class.
 The assignment was to simulate anything of your choice using a basic ruleset. A pdf of the design document for the assignment called `design_doc.pdf` describes in detail how the simulation works. If you are looking to understand the algorithms

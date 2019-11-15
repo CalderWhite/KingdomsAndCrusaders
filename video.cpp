@@ -3,7 +3,6 @@
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <thread>
 #include <unistd.h>
 
 extern "C" {
@@ -18,12 +17,8 @@ const int ms_delay = 3;
 const float fps = 100/ms_delay;
 
 bool running = true;
-bool need_frame = false;
 
 int frame_count = 0;
-
-std::thread enc_loop;
-std::thread grid_loop;
 
 VideoGrid g(grid_size, screen_width, screen_width, 6.0, 1, 0.0, 0.45);
 ge_GIF* gif;
@@ -42,33 +37,31 @@ void signal_handler(int signum) {
     std::cerr << "\n\nCaught signal " << signum << ", safely exiting...\n";
 
     running = false;
-    enc_loop.join();
-    grid_loop.join();
 
     ge_close_gif(gif);
 
     exit(signum);
 }
 
-void gridUpdateLoop() {
-    while (running) {
-        // wait for encoder to finish encoding the last frame
-        while (!need_frame) {
-            // sleep so we don't max out the processor
-            usleep(10);
-        }
-
-        g.updatePeople();
-        g.draw(gif->frame);
-
-        need_frame = false;
+int main(int argc, char* argv[]){
+    if (argc < 2) {
+        std::cerr << "No file name supplied!\n";
+        exit(1);
     }
-}
+    g.addRandomOnLand(7, 1);
 
-void encodeLoop() {
+    gif = ge_new_gif(argv[1], screen_width, screen_width, g.getPalette(), 4, 0);
+
+    signal(SIGINT, signal_handler);
+
+    // draw the map first
+    g.draw(gif->frame);
+    ge_add_frame(gif, ms_delay);
+
     auto t1 = getTime();
     while (running) {
-        need_frame = true;
+        g.updatePeople();
+        g.draw(gif->frame);
 
         ge_add_frame(gif, ms_delay);
 
@@ -90,32 +83,5 @@ void encodeLoop() {
             "Generation Rate: " << gen_speed << "x\n";
             printf("\033[u");
         }
-
-        // wait until it is done generating the frame
-        while (need_frame) {
-            usleep(10);
-        }
     }
-}
-
-int main(int argc, char* argv[]){
-    if (argc < 2) {
-        std::cerr << "No file name supplied!\n";
-        exit(1);
-    }
-    g.addRandomOnLand(7, 1);
-
-    gif = ge_new_gif(argv[1], screen_width, screen_width, g.getPalette(), 4, 0);
-
-    signal(SIGINT, signal_handler);
-
-    enc_loop = std::thread(encodeLoop);
-    grid_loop = std::thread(gridUpdateLoop);
-
-    char c;
-    while (c != 'q') {
-        std::cin >> c;
-    }
-
-    signal_handler(0);
 }

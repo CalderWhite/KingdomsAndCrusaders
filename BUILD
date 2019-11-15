@@ -93,3 +93,12 @@ cc_binary(
         "-lpthread",
     ],
 )
+
+cc_binary(
+    name = "video_single",
+    srcs = ["video_single.cpp"],
+    deps = [
+        ":video_grid",
+        "//third_party/gifenc:gifenc",
+    ],
+)

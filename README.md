@@ -3,13 +3,13 @@
 <!-- Sadly enough, github markdown doesn't allow me to set the css property image-rendering: pixelate.
      Because of this I am forced to scale up the gifs I use in the md files. Otherwise I could just let the browser do that
      and not have to worry about it fuzzing all the pixels. !-->
-<image src="https://github.com/CalderWhite/KingdomsAndCrusaders/raw/storage/gh_preview_400x400.gif?raw=true" />
+<image src="https://github.com/CalderWhite/KingdomsAndCrusaders/raw/storage/gh_preview_600x600.gif?raw=true" />
 
 This repository was originally dedicated to the processing version of this software for my Grade 12 Computer Science class.
 The assignment was to simulate anything of your choice using a basic ruleset. A pdf of the design document for the assignment called `design_doc.pdf` describes in detail how the simulation works. If you are looking to understand the algorithms
 a bit more, I highly recommend exploring the `processing` directory, as its code is well commented. However, it is not efficient or extensible. For this reason a year after I had written the original project I returned and wrote it in c++ to achieve more complex simulations as well as the ability to generate videos of the simulations.
 
-There are 2 main files, `live.cpp` and `video.cpp`. `live` is 100% cross platform and has been tested on 64 bit windows 10 and ubuntu 18.04. It makes use [SDL](https://www.libsdl.org/) for graphics, and can achieve great speeds in real time. `video` has only been tested in linux environments, although some minor adjustments can be made to run on windows (namely the removal of pthreads). This fits as the videos are really meant to be generated on one platform then the video itself is distributed to other platforms.
+There are 2 main files, `live.cpp` and `video.cpp`. `live` is 100% cross platform and has been tested on 64 bit windows 10 and ubuntu 18.04. It makes use [SDL](https://www.libsdl.org/) for graphics, and can achieve great speeds in real time. `video` has only been tested in linux environments but should preform on windows.
 
 ## Building
 

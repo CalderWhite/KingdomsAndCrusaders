@@ -1,4 +1,4 @@
-# KingdomsAndCrusaders
+# KingdomsAndCrusaders [demo](https://calderwhite.github.io/KingdomsAndCrusaders/index.html)
 
 <!-- Sadly enough, github markdown doesn't allow me to set the css property image-rendering: pixelate.
      Because of this I am forced to scale up the gifs I use in the md files. Otherwise I could just let the browser do that

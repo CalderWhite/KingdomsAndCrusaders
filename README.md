@@ -17,11 +17,6 @@ There are 2 main files, `live.cpp` and `video.cpp`. `live` is 100% cross platfor
 
 To run `live` you must have the dynamic SDL libaries installed on your system. `video` has no third party requirements.
 
-## Maintainers
-Calder White ([@CalderWhite](https://github.com/CalderWhite))  
-_These projects are supported by Calder's [Patreon](https://www.patreon.com/calderwhite). If you enjoyed this project or found it useful, any monetary contributions are greatly appreciated and are put right back into these projects._
-
-
 ## File Descriptions
 
 | Class/Header/Main File | Purpose                                                                                                                                                                                                                                                                                                                                                                                                          |

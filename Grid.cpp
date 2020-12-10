@@ -17,10 +17,10 @@ Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
     m_terrain_grid[m_grid_size-1][0] = true;
 
     // generate the island with perlin noise
-	uint32_t seed = m_random_generator();
-	siv::PerlinNoise perlin(seed);
-	double fr = m_grid_size / m_perlin_frequency;
-	double fc = m_grid_size / m_perlin_frequency;
+    uint32_t seed = m_random_generator();
+    siv::PerlinNoise perlin(seed);
+    double fr = m_grid_size / m_perlin_frequency;
+    double fc = m_grid_size / m_perlin_frequency;
 
     for (int r=0; r<m_grid_size; r++) {
         for (int c=0; c<m_grid_size; c++) {
@@ -98,8 +98,8 @@ void Grid::updatePeople() {
                             p.getDirection(&r_dir, &c_dir);
 
 
-			    // remove where the sailor was before checking if it can go forward
-			    // this way sailors can sail off the map.
+                // remove where the sailor was before checking if it can go forward
+                // this way sailors can sail off the map.
                             m_person_grid_next[r][c].setActive(false);
 
                             bool on_edge = onEdge(r, c);

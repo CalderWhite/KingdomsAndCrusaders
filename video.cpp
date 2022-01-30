@@ -11,16 +11,15 @@ extern "C" {
 
 #include "VideoGrid.h"
 
-const int screen_width = 400;
-const int grid_size = 400;
-const int ms_delay = 3;
-const float fps = 100/ms_delay;
+int screen_width;
+int grid_size;
+int ms_delay;
+float fps;
 
 bool running = true;
 
 int frame_count = 0;
 
-VideoGrid g(grid_size, screen_width, screen_width, 6.0, 1, 0.0, 0.45);
 ge_GIF* gif;
 
 std::chrono::high_resolution_clock::time_point getTime() {
@@ -43,11 +42,18 @@ void signal_handler(int signum) {
     exit(signum);
 }
 
-int main(int argc, char* argv[]){
-    if (argc < 2) {
-        std::cerr << "No file name supplied!\n";
+int main(int argc, char* argv[]) {
+    if (argc < 4) {
+        std::cerr << "./video [filename] [width] [ms delay between gif frames]\n";
         exit(1);
     }
+    screen_width = atoi(argv[2]);
+    grid_size = atoi(argv[2]);
+    ms_delay = atoi(argv[3]);
+    fps = 100.0 / ms_delay;
+    // further configuration of the simulation can be adjusted via the floats below.
+    VideoGrid g(grid_size, screen_width, screen_width, 6.0, 1, 0.0, 0.45);
+
     g.addRandomOnLand(7, 1);
 
     gif = ge_new_gif(argv[1], screen_width, screen_width, g.getPalette(), 4, 0);

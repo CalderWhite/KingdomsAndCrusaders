@@ -29,3 +29,11 @@ To run `live` you must have the dynamic SDL libaries installed on your system. `
 | FrameCounter           | A concise class to average fps over n number of iterations in SDL. This has no relevance to the actual simulation or CVGrid. It is simply an auxiliary class to `live`                                                                                                                                                                                                                                           |
 | live                   | This plays the simulation live in a popup window via SDL. There are many variables that can be tweaked in this program to provide interesting results. However, in order to understand what to tweak some exploration of the original processing code and/or the design document may be necessary.                                                                                                               |
 | video                  | Generates a gif of a simulation.                                                                                                                                                                                                                                                            |
+
+
+
+## Good settings
+
+`./bazel-bin/video /tmp/out.gif 200 200 5 8 2`
+
+`./bazel-bin/video /tmp/out.gif 600 300 7 8 2 3000`

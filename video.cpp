@@ -38,16 +38,22 @@ void signal_handler(int signum) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 5) {
-        std::cerr << "./video [filename] [width] [height] [ms delay between gif frames]\n";
+    if (argc < 7) {
+        std::cerr << "./video [filename] [width] [height] [ms delay between gif frames] [perlin_frequency] [perlin octave] [max frame, optional]\n";
         exit(1);
     }
     int screen_width = atoi(argv[2]);
     int screen_height = atoi(argv[3]);
     int ms_delay = atoi(argv[4]);
     float fps = 100.0 / ms_delay;
+    float perlin_frequency = atof(argv[5]);
+    float perlin_octave = atof(argv[6]);
+    int max_frame = -1;
+    if (argc > 7) {
+        max_frame = atoi(argv[7]);
+    }
     // further configuration of the simulation can be adjusted via the floats below.
-    VideoGrid g(screen_width, screen_height, 6.0, 1, 0.0, 0.45);
+    VideoGrid g(screen_width, screen_height, perlin_frequency, perlin_octave, 0.0, 0.45);
 
     g.addRandomOnLand(7, 1);
 
@@ -60,7 +66,7 @@ int main(int argc, char* argv[]) {
     ge_add_frame(gif, ms_delay);
 
     auto t1 = getTime();
-    while (running) {
+    while (running && (max_frame == -1 || frame_count < max_frame)) {
         g.updatePeople();
         g.draw(gif->frame);
 
@@ -85,4 +91,6 @@ int main(int argc, char* argv[]) {
             printf("\033[u");
         }
     }
+
+    ge_close_gif(gif);
 }

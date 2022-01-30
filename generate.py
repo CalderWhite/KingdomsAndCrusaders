@@ -7,11 +7,12 @@ from multiprocessing import Pool
 import subprocess
 
 
-OUT_DIR = "dist"
+OUT_DIR = "/tmp/dist"
 
 
 def worker(name):
-    subprocess.run(["./bazel-bin/video", name])
+    #./bazel-bin/video /tmp/out.gif 600 300 7 8 2 3000
+    subprocess.run(["./bazel-bin/video", name, "600", "300", "7", "8", "2", "3000"])
 
 
 def main(args):

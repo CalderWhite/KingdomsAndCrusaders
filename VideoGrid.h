@@ -6,7 +6,7 @@
 
 class VideoGrid : public Grid {
 public:
-    VideoGrid(int grid_size, int screen_width, int screen_height, double perlin_frequency,
+    VideoGrid(int screen_width, int screen_height, double perlin_frequency,
          int perlin_octave, double perlin_min, double perlin_max);
 
     ~VideoGrid();
@@ -25,4 +25,5 @@ private:
     int m_palette_size;
 
     int m_width_multiple;
+    int m_height_multiple;
 };

@@ -2,10 +2,8 @@
 
 #include "VideoGrid.h"
 
-VideoGrid::VideoGrid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
-    : Grid(gs, sw, sh, pf, po, pmin, pmax) {
-
-    m_width_multiple = m_screen_width / m_grid_size;
+VideoGrid::VideoGrid(int sw, int sh, double pf, int po, double pmin, double pmax)
+    : Grid(sw, sh, pf, po, pmin, pmax) {
 
     m_palette_size = 27;
     uint8_t temp_palette[m_palette_size] = {
@@ -34,23 +32,20 @@ VideoGrid::~VideoGrid() {
 }
 
 void VideoGrid::draw(uint8_t frame[]) {
-    for (int r=0; r<m_screen_width; r++) {
+    for (int r=0; r<m_screen_height; r++) {
         for (int c=0; c<m_screen_width; c++) {
-            int _r = r/m_width_multiple;
-            int _c = c/m_width_multiple;
-
-            Person& p = m_person_grid[_r][_c];
+            Person& p = m_person_grid[r][c];
 
             int palette_index = 0;
             if (p.getActive()) {
                 palette_index = 2 + p.getColony();
-            } else if (m_terrain_grid[_r][_c]) {
+            } else if (m_terrain_grid[r][c]) {
                 palette_index = 0;
             } else {
                 palette_index = 1;
             }
 
-            frame[r*m_screen_width + c] = palette_index;
+            frame[r * m_screen_width + c] = palette_index;
         }
     }
 }

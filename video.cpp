@@ -11,11 +11,6 @@ extern "C" {
 
 #include "VideoGrid.h"
 
-int screen_width;
-int grid_size;
-int ms_delay;
-float fps;
-
 bool running = true;
 
 int frame_count = 0;
@@ -43,20 +38,20 @@ void signal_handler(int signum) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        std::cerr << "./video [filename] [width] [ms delay between gif frames]\n";
+    if (argc < 5) {
+        std::cerr << "./video [filename] [width] [height] [ms delay between gif frames]\n";
         exit(1);
     }
-    screen_width = atoi(argv[2]);
-    grid_size = atoi(argv[2]);
-    ms_delay = atoi(argv[3]);
-    fps = 100.0 / ms_delay;
+    int screen_width = atoi(argv[2]);
+    int screen_height = atoi(argv[3]);
+    int ms_delay = atoi(argv[4]);
+    float fps = 100.0 / ms_delay;
     // further configuration of the simulation can be adjusted via the floats below.
-    VideoGrid g(grid_size, screen_width, screen_width, 6.0, 1, 0.0, 0.45);
+    VideoGrid g(screen_width, screen_height, 6.0, 1, 0.0, 0.45);
 
     g.addRandomOnLand(7, 1);
 
-    gif = ge_new_gif(argv[1], screen_width, screen_width, g.getPalette(), 4, 0);
+    gif = ge_new_gif(argv[1], screen_width, screen_height, g.getPalette(), 4, 0);
 
     signal(SIGINT, signal_handler);
 

@@ -5,25 +5,25 @@
 #include "third_party/PerlinNoise.hpp"
 #include "Grid.h"
 
-Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
-    : m_grid_size(gs), m_screen_width(sw), m_screen_height(sh), m_perlin_frequency(pf),
+Grid::Grid(int sw, int sh, double pf, int po, double pmin, double pmax)
+    : m_screen_width(sw), m_screen_height(sh), m_perlin_frequency(pf),
     m_perlin_octaves(po), m_perlin_min(pmin), m_perlin_max(pmax), m_random_device(),
     m_random_generator((m_random_device())) {
     
-    m_terrain_grid.resize(m_grid_size, std::vector<bool>(m_grid_size));
-    m_person_grid.resize(m_grid_size, std::vector<Person>(m_grid_size));
-    m_person_grid_next.resize(m_grid_size, std::vector<Person>(m_grid_size));
+    m_terrain_grid.resize(m_screen_height, std::vector<bool>(m_screen_width));
+    m_person_grid.resize(m_screen_height, std::vector<Person>(m_screen_width));
+    m_person_grid_next.resize(m_screen_height, std::vector<Person>(m_screen_width));
 
-    m_terrain_grid[m_grid_size-1][0] = true;
+    m_terrain_grid[m_screen_height-1][0] = true;
 
     // generate the island with perlin noise
     uint32_t seed = m_random_generator();
     siv::PerlinNoise perlin(seed);
-    double fr = m_grid_size / m_perlin_frequency;
-    double fc = m_grid_size / m_perlin_frequency;
+    double fr = m_screen_height / m_perlin_frequency;
+    double fc = m_screen_width / m_perlin_frequency;
 
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
+    for (int r=0; r<m_screen_height; r++) {
+        for (int c=0; c<m_screen_width; c++) {
             double p_ = perlin.octaveNoise0_1(r / fr, c / fc, m_perlin_octaves);
             if (p_ > m_perlin_min && p_ < m_perlin_max) {
                 m_terrain_grid[r][c] = true;
@@ -34,8 +34,8 @@ Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
     }
 
     // calculate the total land size for the birth algorithm to use later
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
+    for (int r=0; r<m_screen_height; r++) {
+        for (int c=0; c<m_screen_width; c++) {
             if (m_terrain_grid[r][c]) {
                 ++m_total_land;
             }
@@ -48,16 +48,16 @@ Grid::Grid(int gs, int sw, int sh, double pf, int po, double pmin, double pmax)
 void Grid::addRandomOnLand(int colony_count, int n) {
     for (int i=0; i<colony_count; i++) {
         for (int j=0; j<n; j++) {
-            std::uniform_int_distribution<int> distribution(0, m_grid_size*m_grid_size-1);
+            std::uniform_int_distribution<int> distribution(0, m_screen_height*m_screen_width-1);
             int rand = distribution(m_random_generator);
-            int r = rand / m_grid_size;
-            int c =  rand % m_grid_size;
+            int r = rand / m_screen_width;
+            int c = rand % m_screen_height;
 
             while (!m_terrain_grid[r][c]) {
-                std::uniform_int_distribution<int> distribution(0, m_grid_size*m_grid_size-1);
+                std::uniform_int_distribution<int> distribution(0, m_screen_height*m_screen_width-1);
                 int rand = distribution(m_random_generator);
-                r = rand / m_grid_size;
-                c =  rand % m_grid_size;
+                r = rand / m_screen_width;
+                c =  rand % m_screen_height;
             }
 
             Person p(i);
@@ -72,16 +72,16 @@ void Grid::addPerson(Person& p, int row, int col) {
 
 void Grid::updatePeople() {
     // copy over the current state to the next state before processing
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
+    for (int r=0; r<m_screen_height; r++) {
+        for (int c=0; c<m_screen_width; c++) {
             m_person_grid[r][c] = m_person_grid_next[r][c];
         }
     }
 
     updateColonyCount();
 
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
+    for (int r=0; r<m_screen_height; r++) {
+        for (int c=0; c<m_screen_width; c++) {
             Person& p = m_person_grid[r][c];
 
             if (p.getActive()) {
@@ -126,8 +126,8 @@ void Grid::updateColonyCount() {
         m_colony_count[i] = 0;
     }
 
-    for (int r=0; r<m_grid_size; r++) {
-        for (int c=0; c<m_grid_size; c++) {
+    for (int r=0; r<m_screen_height; r++) {
+        for (int c=0; c<m_screen_width; c++) {
             Person& p = m_person_grid[r][c];
             if (p.getActive()) {
                 ++m_colony_count[p.getColony()];

@@ -9,7 +9,7 @@
 class Grid {
 public:
 
-    Grid(int grid_size, int screen_width, int screen_height, double perlin_frequency,
+    Grid(int screen_width, int screen_height, double perlin_frequency,
          int perlin_octave, double perlin_min, double perlin_max);
 
     void addPerson(Person& p, int row, int col);
@@ -19,7 +19,6 @@ public:
 
 protected:
     static const int m_max_colony_count = 8;
-    const int m_grid_size;
     int m_screen_width;
     int m_screen_height;
 
@@ -53,7 +52,7 @@ protected:
     }
 
     inline bool onEdge(int row, int col) {
-        if (row == 0 || row == m_grid_size-1 || col == 0 || col == m_grid_size-1) {
+        if (row == 0 || row == m_screen_height-1 || col == 0 || col == m_screen_width-1) {
             return true;
         }
 
@@ -61,7 +60,7 @@ protected:
     }
 
     inline bool outOfBounds(int row, int col) {
-        if (row < 0 || row == m_grid_size || col < 0 || col == m_grid_size) {
+        if (row < 0 || row == m_screen_height || col < 0 || col == m_screen_width) {
             return true;
         }
 
